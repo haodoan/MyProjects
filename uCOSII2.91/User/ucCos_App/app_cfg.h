@@ -37,16 +37,15 @@
 *                                            TASK PRIORITIES
 *********************************************************************************************************
 */ 
-#define  OS_VIEW_TASK_PRIO               (                 2)
-#define  APP_TASK_BACKLIGHT_PRIO         (                 3) 
-#define  APP_TASK_TouchPanel_PRIO		 (				   4)
-#define  APP_TASK_UCGUI_PRIO             (                 5)
-#define  APP_TASK_BLINK_PRIO          	 (OS_LOWEST_PRIO - 4)
 
-
-#define  APP_TASK_START_PRIO                               1
-#define  APP_TASK_OSVIEW_TERMINAL_PRIO	 (OS_LOWEST_PRIO - 6)
-#define  OS_TASK_TMR_PRIO                (OS_LOWEST_PRIO - 2)
+#define APP_TASK_START_PRIO     1
+#define OS_VIEW_TASK_PRIO       2
+#define READ_TASK_PRIORITY       4
+#define WRITE_TASKA_PRIORITY     5
+#define WRITE_TASKB_PRIORITY     6
+#define WRITE_TASKC_PRIORITY     7
+#define APP_TASK_OSVIEW_TERMINAL_PRIO	 (OS_LOWEST_PRIO - 6)
+#define OS_TASK_TMR_PRIO                (OS_LOWEST_PRIO - 2)
 
 
 
@@ -57,15 +56,13 @@
 *                             Size of the task stacks (# of OS_STK entries)
 *********************************************************************************************************
 */
-#define  APP_TASK_UCGUI_STK_SIZE                         512u 
-#define  APP_TASK_BACKLIGHT_STK_SIZE					 128u
-#define  APP_TASK_TouchPanel_STK_SIZE					 256u
-#define  APP_TASK_BLINK_STK_SIZE                         128u
+#define	WRITE_TASK_STACK_SIZE       					128u
+#define READ_TASK_STACK_SIZE     							128u
 
 
-#define  APP_TASK_START_STK_SIZE                          64u
-#define  APP_TASK_OSVIEW_TERMINAL_STK_SIZE   			 256u
-#define  OS_VIEW_TASK_STK_SIZE                           256u
+#define  APP_TASK_START_STK_SIZE              64u
+#define  APP_TASK_OSVIEW_TERMINAL_STK_SIZE   	256u
+#define  OS_VIEW_TASK_STK_SIZE                256u
 
 
 

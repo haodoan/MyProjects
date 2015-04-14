@@ -36,11 +36,11 @@
 #include    <uCOS-VIEW\Source\os_view.h>
 #endif
 
-#include    <GUI.h>
+//#include    <GUI.h>
 #include    <stm32f10x.h>
-#include    "TouchPanel.h"
-#include    "LCDConf.h"
-#include    "GLCD.h"
+//#include    "TouchPanel.h"
+//#include    "LCDConf.h"
+//#include    "GLCD.h"
 
 #endif
 

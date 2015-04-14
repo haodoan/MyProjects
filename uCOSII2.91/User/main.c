@@ -15,6 +15,15 @@
 /* Includes ------------------------------------------------------------------*/
 #include <includes.h>
 
+#ifdef __GNUC__
+  /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+     set to 'Yes') calls __io_putchar() */
+  #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+  #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+	
+	
 /* Private variables ---------------------------------------------------------*/
 static  OS_STK         App_TaskStartStk[APP_TASK_START_STK_SIZE];
 
@@ -27,9 +36,9 @@ extern void  App_OSViewTaskCreate   (void);
 
 static  void  App_TaskCreate		(void);
 static  void  App_TaskStart			(void		*p_arg);  
-extern  void  App_UCGUI_TaskCreate  (void);
+extern  void  MyApp_TaskCreate  (void);
 static  void  GPIO_Configuration    (void);
-
+static  void  UART_Configuration(void);
 
 /*
 *********************************************************************************************************
@@ -45,13 +54,12 @@ static  void  GPIO_Configuration    (void);
 */
 INT32S main (void)
 {
-    CPU_INT08U  os_err;
+  CPU_INT08U  os_err;
 	os_err = os_err; /* prevent warning... */
 
-	/* Note:  由于使用UCOS, 在OS运行之前运行,注意别使能任何中断. */
-	CPU_IntDis();                    /* Disable all ints until we are ready to accept them.  */
+	 CPU_IntDis();                    /* Disable all ints until we are ready to accept them.  */
 
-    OSInit();                        /* Initialize "uC/OS-II, The Real-Time Kernel".         */
+   OSInit();                        /* Initialize "uC/OS-II, The Real-Time Kernel".         */
 	
 
 	os_err = OSTaskCreateExt((void (*)(void *)) App_TaskStart,  /* Create the start task.                               */
@@ -95,21 +103,22 @@ static  void  App_TaskStart (void *p_arg)
 	
 	/***************  Init hardware ***************/
 
-	GPIO_Configuration();
-
+	  GPIO_Configuration();
+		UART_Configuration();
     OS_CPU_SysTickInit();                                    /* Initialize the SysTick.                              */
 
 #if (OS_TASK_STAT_EN > 0)
     OSStatInit();                                            /* Determine CPU capacity.                              */
 #endif
-
+    
+    printf("DEMO SEMAPHORE\r\n")	;
     App_TaskCreate();                                        /* Create application tasks.                            */
-
+    
 	for(;;)
-   	{
+	{
 
-      	OSTimeDlyHMSM(0, 1, 0, 0);							 /* Delay One minute */
-    }	
+			OSTimeDlyHMSM(0, 1, 0, 0);							 /* Delay One minute */
+	}	
 }
 
 
@@ -135,7 +144,7 @@ static  void  App_TaskCreate (void)
 	App_OSViewTaskCreate();
 #endif	
 	
-	App_UCGUI_TaskCreate();	
+	MyApp_TaskCreate();	
 
 }
 
@@ -151,7 +160,8 @@ void GPIO_Configuration(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   
-  RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB , ENABLE);
+  RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB |RCC_APB2Periph_AFIO , ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
   /**
   *  LED1 -> PB15 , LED2 -> PB14 , LED3 -> PB13 , LED4 -> PB12
   */			
@@ -159,9 +169,39 @@ void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; ; 
   GPIO_Init(GPIOB, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; ; 
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; ; 
+  GPIO_Init(GPIOA, &GPIO_InitStructure);	
 }
 
-
+void UART_Configuration(void)
+{
+  USART_InitTypeDef USART_InitStructure;
+  /* USARTx configuration ------------------------------------------------------*/
+  /* USARTx configured as follow:
+        - BaudRate = 115200 baud  
+        - Word Length = 8 Bits
+        - One Stop Bit
+        - No parity
+        - Hardware flow control disabled (RTS and CTS signals)
+        - Receive and transmit enabled
+  */
+  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No ;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	USART_Init(USART1,&USART_InitStructure); 
+	USART_Cmd(USART1, ENABLE);
+}
 #ifdef  USE_FULL_ASSERT
 
 /**
@@ -182,6 +222,25 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
+
+
+/**
+  * @brief  Retargets the C library printf function to the USART.
+  * @param  None
+  * @retval None
+  */
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the USART */
+  USART_SendData(USART1, (uint8_t) ch);
+
+  /* Loop until the end of transmission */
+  while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
+  {}
+
+  return ch;
+}
 
 /*********************************************************************************************************
       END FILE
