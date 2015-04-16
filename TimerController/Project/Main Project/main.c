@@ -129,20 +129,20 @@ int main(void)
   USART1_usart1_Configuration();
 	NVIC_usart1_Configuration();
 	GPIO_Configuration();
-	STM_EVAL_LEDInit(LED1);
+	//STM_EVAL_LEDInit(LED1);
 	STM_EVAL_LEDInit(LED2);
-	STM_EVAL_LEDInit(LED3);
-  STM_EVAL_LEDInit(LED4);
+	//STM_EVAL_LEDInit(LED3);
+  //STM_EVAL_LEDInit(LED4);
 
-	STM_EVAL_LEDOn(LED1);
-	STM_EVAL_LEDOn(LED2);
-	STM_EVAL_LEDOn(LED3);
-	STM_EVAL_LEDOn(LED4);
-	delay_ms(1000);   
-	STM_EVAL_LEDOff(LED1);
-	STM_EVAL_LEDOff(LED2);
-	STM_EVAL_LEDOff(LED3);
-  STM_EVAL_LEDOff(LED4);
+//	STM_EVAL_LEDOn(LED1);
+//	STM_EVAL_LEDOn(LED2);
+//	STM_EVAL_LEDOn(LED3);
+//	STM_EVAL_LEDOn(LED4);
+//	delay_ms(1000);   
+//	STM_EVAL_LEDOff(LED1);
+//	STM_EVAL_LEDOff(LED2);
+//	STM_EVAL_LEDOff(LED3);
+//  STM_EVAL_LEDOff(LED4);
 	
 	RTC_Init();
 //  if(InputGsmRi == 0) 
@@ -197,14 +197,14 @@ void GPIO_Configuration(void)
 		GPIO_InitTypeDef GPIO_InitStructure; 				 	
 	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);	 			//GPIOB clock
   	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;  	//…Ë÷√GPIOB0°¢GPIOB1°¢GPIOB12
-  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;				  	
+  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				  	
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;				  	
   	GPIO_Init(GPIOA, &GPIO_InitStructure);							  	 	
 	
 	
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	 			//GPIOB clock
-  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_8|GPIO_Pin_10;  	//…Ë÷√GPIOB0°¢GPIOB1°¢GPIOB12
-  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;				  	
+  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_6|GPIO_Pin_7 |GPIO_Pin_8 |GPIO_Pin_9;  	//…Ë÷√GPIOB0°¢GPIOB1°¢GPIOB12
+  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				  	
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;				  	
   	GPIO_Init(GPIOB, &GPIO_InitStructure);							  	 	
 }

@@ -58,10 +58,10 @@
 #define timeout_rx1 250
 #define timeout_rx3 100
 #define InputDefaut               GPIO_ReadInputDataBit(GPIOA , GPIO_Pin_0)
-#define InputGsmRi                GPIO_ReadInputDataBit(GPIOA , GPIO_Pin_6)
+#define InputGsmRi                GPIO_ReadInputDataBit(GPIOB , GPIO_Pin_8)
 #define InputSwitchOff            GPIO_ReadInputDataBit(GPIOB , GPIO_Pin_10)
 #define Alarm(x)    x? GPIO_SetBits(GPIOA , GPIO_Pin_11):GPIO_ResetBits(GPIOA , GPIO_Pin_11)
-#define Nreset(x)   x? GPIO_SetBits(GPIOA , GPIO_Pin_8 ):GPIO_ResetBits(GPIOA , GPIO_Pin_8)
+#define Nreset(x)   x? GPIO_SetBits(GPIOB , GPIO_Pin_7 ):GPIO_ResetBits(GPIOB , GPIO_Pin_7)
 #define Buzz(x)     x? GPIO_SetBits(GPIOB , GPIO_Pin_9|GPIO_Pin_10) :GPIO_ResetBits(GPIOB , GPIO_Pin_9)
 #define PwrGas(x)   x? GPIO_SetBits(GPIOB , GPIO_Pin_8) :GPIO_ResetBits(GPIOB , GPIO_Pin_8)
 #define GsmDtr(x)   x? GPIO_SetBits(GPIOA , GPIO_Pin_5) :GPIO_ResetBits(GPIOA , GPIO_Pin_5)

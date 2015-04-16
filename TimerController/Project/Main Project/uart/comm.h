@@ -40,8 +40,8 @@
 //#define RELAY2(x) x?GPIO_SetBits(GPIOA , GPIO_Pin_14):GPIO_ResetBits(GPIOA , GPIO_Pin_14) // xuong
 //#define RELAY3(x) x?GPIO_SetBits(GPIOA , GPIO_Pin_15):GPIO_ResetBits(GPIOA , GPIO_Pin_15) // Dung
 
-#define RELAY1(x)   x? GPIO_SetBits(GPIOB , GPIO_Pin_0|GPIO_Pin_8) :GPIO_ResetBits(GPIOB , GPIO_Pin_0|GPIO_Pin_8)
-#define RELAY2(x)   x? GPIO_SetBits(GPIOB , GPIO_Pin_1|GPIO_Pin_10) :GPIO_ResetBits(GPIOB , GPIO_Pin_1|GPIO_Pin_10)
+#define RELAY1(x)   x? GPIO_SetBits(GPIOB , GPIO_Pin_6) :GPIO_ResetBits(GPIOB , GPIO_Pin_6)
+#define RELAY2(x)   x? GPIO_SetBits(GPIOB , GPIO_Pin_7) :GPIO_ResetBits(GPIOB , GPIO_Pin_7)
 
 // DEFINE USART1
 #define USARTx                   USART1

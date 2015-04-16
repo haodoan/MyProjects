@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "sim900_register.h"
 #include "flasheeprom.h"
+#include "interface.h"
 
 
 /*************************************************************

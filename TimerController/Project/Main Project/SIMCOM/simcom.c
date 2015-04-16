@@ -39,7 +39,7 @@ extern void __delay_ms(u16 time)
 *******************************************************************************/
 extern void Pwrkey(char key)
 {
-		key? GPIO_SetBits(GPIOA , GPIO_Pin_4):GPIO_ResetBits(GPIOA , GPIO_Pin_4);
+		key? GPIO_SetBits(GPIOB , GPIO_Pin_9):GPIO_ResetBits(GPIOB , GPIO_Pin_9);
 }
 /*******************************************************************************
 * Function Name  : GSM_putsf
