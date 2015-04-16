@@ -112,17 +112,16 @@ void GPIO_Configuration(void)
 {  
   	  
 		GPIO_InitTypeDef GPIO_InitStructure; 				 	
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);	 			//GPIOA clock
-  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8
-																	|GPIO_Pin_11|GPIO_Pin_12;  	//设置GPIOB0、GPIOB1、GPIOB12
-  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;				  	
+	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);	 			//GPIOB clock
+  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;  	//设置GPIOB0、GPIOB1、GPIOB12
+  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				  	
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;				  	
   	GPIO_Init(GPIOA, &GPIO_InitStructure);							  	 	
 	
 	
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	 			//GPIOB clock
-  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_8|GPIO_Pin_10|GPIO_Pin_11;  	//设置GPIOB0、GPIOB1、GPIOB12
-  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;				  	
+  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_6|GPIO_Pin_7 |GPIO_Pin_8 |GPIO_Pin_9;  	//设置GPIOB0、GPIOB1、GPIOB12
+  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				  	
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;				  	
   	GPIO_Init(GPIOB, &GPIO_InitStructure);							  	 	
 }
