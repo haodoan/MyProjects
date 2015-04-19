@@ -66,16 +66,16 @@
   */
 #define LEDn                             4
 #define LED1_PIN                         GPIO_Pin_6
-#define LED1_GPIO_PORT                   GPIOC
-#define LED1_GPIO_CLK                    RCC_APB2Periph_GPIOC  
+#define LED1_GPIO_PORT                   GPIOB
+#define LED1_GPIO_CLK                    RCC_APB2Periph_GPIOB
   
 #define LED2_PIN                         GPIO_Pin_13
 #define LED2_GPIO_PORT                   GPIOC
 #define LED2_GPIO_CLK                    RCC_APB2Periph_GPIOC  
 
-#define LED3_PIN                         GPIO_Pin_8  
-#define LED3_GPIO_PORT                   GPIOC
-#define LED3_GPIO_CLK                    RCC_APB2Periph_GPIOC  
+#define LED3_PIN                         GPIO_Pin_5
+#define LED3_GPIO_PORT                   GPIOB
+#define LED3_GPIO_CLK                    RCC_APB2Periph_GPIOB
   
 #define LED4_PIN                         GPIO_Pin_9
 #define LED4_GPIO_PORT                   GPIOC

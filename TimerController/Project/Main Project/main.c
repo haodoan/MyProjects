@@ -145,7 +145,7 @@ int main(void)
 //  STM_EVAL_LEDOff(LED4);
 	
 	RTC_Init();
-//  if(InputGsmRi == 0) 
+  if(InputGsmRi == 0) 
 	Start_Gsm();  // Kiem tra chan Ri
 	DelAllSmsCmgda();
   delay_ms(2000);   
@@ -159,10 +159,10 @@ int main(void)
 	delay_ms(1000);
 	timecurr = GetTimeCurrent(RTC_GetCounter());
 	sprintf(tempbuff_,"Thiet bi khoi dong luc %d:%d:%d\nNgay : %d-%d-%d\n",timecurr.HOUR,timecurr.MINUTE,timecurr.SECOND,timecurr.DAY,timecurr.MONTH,timecurr.YEAR)	;
-	if(flashv.user[0].PHONE_NO[0] == 0xFF)
-		SentEnglis_SIMmsg("0944500186",tempbuff_);
-	else
-		SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,tempbuff_); 
+//	if(flashv.user[0].PHONE_NO[0] == 0xFF)
+//		SentEnglis_SIMmsg("0944500186",tempbuff_);
+//	else
+//		SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,tempbuff_); 
 	
 	while(1)
 	{				
@@ -176,7 +176,9 @@ int main(void)
    Time_Show(timeonoff);
  	 if(sysTick_counter - temp_ > 500)
 		{
- 			STM_EVAL_LEDToggle(LED2);
+			//STM_EVAL_LEDToggle(LED1);
+			STM_EVAL_LEDToggle(LED2);
+ 			//STM_EVAL_LEDToggle(LED3);
  			temp_ = sysTick_counter;
  		}
 		
@@ -203,7 +205,7 @@ void GPIO_Configuration(void)
 	
 	
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	 			//GPIOB clock
-  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_6|GPIO_Pin_7 |GPIO_Pin_8 |GPIO_Pin_9;  	//…Ë÷√GPIOB0°¢GPIOB1°¢GPIOB12
+  	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7 |GPIO_Pin_8 |GPIO_Pin_9;  	//…Ë÷√GPIOB0°¢GPIOB1°¢GPIOB12
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				  	
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;				  	
   	GPIO_Init(GPIOB, &GPIO_InitStructure);							  	 	

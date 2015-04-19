@@ -75,16 +75,24 @@ STRUCTCOMMAND GetCmdData(char *str)
 
 extern void help()
 {
-		printf("1.Hengio:Giobat1,Giotat1,..,...\n");
-		printf("2.Thoigian\n");
-		printf("3.Caidatgio:hh,mm,ss\n");
-		printf("4.Caidatngay:dd,mm,yy\n");
-		printf("5.Chedo:0 hoac 1\n");
-		printf("    0 :Gio tu dong theo mua\n");
-		printf("    1 :Cai dat\n");
-		printf("6.Mua:0 hoac 1,giobat,phutbat,giotat,phuttat\n");
-		printf("    0 :mua he\n");
-		printf("    1 :mua dong\n");
+		char help_buf[160] = {0};
+		strcat(help_buf,"1.Hengio:Giobat1,Giotat1,..,..,\n");
+		strcat(help_buf,"2.Thoigian\n");
+		strcat(help_buf,"3.Caidatgio:hh,mm,ss\n");
+		strcat(help_buf,"4.Caidatngay:dd,mm,yy\n");
+		strcat(help_buf,"5.Chedo:0 hoac 1\n");
+		//printf("    0 :Gio tu dong theo tung mua\n");
+		//printf("    1 :Tu cai dat \n");
+		//printf("6.Mua:0 hoac 1,giobat,phutbat,giotat,phuttat\n");
+		//printf("    0 :mua he\n");
+		//printf("    1 :mua dong\n");
+		strcat(help_buf,"6.tb1 bat hoac tat\n");
+	  strcat(help_buf,"7.tb2 bat hoac tat\n");
+	  strcat(help_buf,"8.batca hoac tatca\n");
+	  SentEnglis_SIMmsg(decodeSMS.numberPhone,help_buf);
+	
+	  //printf("10.PH hoac KPH\n");
+	  //printf("11.LOG\n");
 
 }
 /*******************************************************************************
@@ -252,11 +260,11 @@ uint8_t UARTCommand(char *buffer,UART_PACKKET_STRUCT *uart_packet)
 					function_eeprom = SAVEMEM;
 					return KPH;
 		} 	  	  
-		else if(!strcmp(p,"LOG") == 0)
+		else if(strcmp(p,"LOG") == 0)
 		{
 			return LOG;
 		}
-		else if(!strcmp(p,"HELP") == 0)
+		else if(strcmp(p,"HELP") == 0)
 		{
 				return HELP;
 		}
@@ -356,7 +364,7 @@ void CommadProcess(TIMESETUP timeonoffG[][10],char *buffer)
 			 SentEnglis_SIMmsg(decodeSMS.numberPhone,"Cai dat gio mua dong thanh cong\n");	
 			 function_eeprom = SAVEMEM;		
 			 break;				
-      case TB: 
+     case TB: 
 			 if(status_tb[0] == 1 && status_tb[1] == 1)
 				SentEnglis_SIMmsg(decodeSMS.numberPhone,"Da bat ca hai thiet bi\n");
 			 else if(status_tb[0] == 0 && status_tb[1] == 0)
@@ -402,6 +410,7 @@ void CommadProcess(TIMESETUP timeonoffG[][10],char *buffer)
 		  SentEnglis_SIMmsg(decodeSMS.numberPhone,"Da Huy cai dat phan hoi tin nhan\n"); 
 		break;		
 		case HELP:
+			  help();
 				break;
 		case CMDERR:
 				SentEnglis_SIMmsg(decodeSMS.numberPhone,"Ma lenh sai,Vui long kiem tra lai\n");
