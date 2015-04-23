@@ -591,7 +591,7 @@ DATE_STRUCT get_cclk(void)
          if(strstr(GSM1.buff_rx[GSM1.co_rx],"\r\n+CCLK:"))
          {   
             p = strstr(GSM1.buff_rx[GSM1.co_rx],"+CCLK:") + 8;
-            clock.YEAR = ((*(p))-'0')*10 + (*(p+1))-'0' + 2000;
+            clock.YEAR = ((*(p))-'0')*10 + (*(p+1))-'0';
             p +=3;		
             clock.MONTH = ((*(p))-'0')*10 + (*(p+1))-'0';
             p +=3;		
@@ -620,13 +620,12 @@ DATE_STRUCT get_cclk(void)
 * Return         : 0:nhan cuoc khong thanh cong,1:nhan cuoc goi thanh cong
 * Attention		 : None
 *******************************************************************************/
-char SetingCCLK(char *years,char *months,char *days,char *hours,char *minutes,char *seconds,char *timezone)
+char SetingCCLK(DATE_STRUCT clock ,char *timezone)
 {
-		 char buffSettingTime[50] = "";
-		 sprintf(buffSettingTime,"AT+CCLK=%c%s/%s/%s,%s:%s:%s+%s%c",34,years,months,days,hours,minutes,seconds,timezone,34);
-		 GSM_putsf(buffSettingTime);
-		 GSM_putsf("\r");
-		 return 1;
+     char buffSettingTime[50] = {0};
+     sprintf(buffSettingTime,"AT+CCLK=%c%d/%d/%d,%d:%d:%d%s%c\r",34,clock.YEAR,clock.MONTH,clock.DAY,clock.HOUR,clock.MINUTE,clock.SECOND,timezone,34);
+     GSM_putsf(buffSettingTime);
+     return 1;
 }
 /*******************************************************************************
 * Function Name  : DellSms

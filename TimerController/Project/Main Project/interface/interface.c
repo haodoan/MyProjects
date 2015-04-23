@@ -75,24 +75,24 @@ STRUCTCOMMAND GetCmdData(char *str)
 
 extern void help()
 {
-		char help_buf[160] = {0};
-		strcat(help_buf,"1.Hengio:Giobat1,Giotat1,..,..,\n");
-		strcat(help_buf,"2.Thoigian\n");
-		strcat(help_buf,"3.Caidatgio:hh,mm,ss\n");
-		strcat(help_buf,"4.Caidatngay:dd,mm,yy\n");
-		strcat(help_buf,"5.Chedo:0 hoac 1\n");
-		//printf("    0 :Gio tu dong theo tung mua\n");
-		//printf("    1 :Tu cai dat \n");
-		//printf("6.Mua:0 hoac 1,giobat,phutbat,giotat,phuttat\n");
-		//printf("    0 :mua he\n");
-		//printf("    1 :mua dong\n");
-		strcat(help_buf,"6.tb1 bat hoac tat\n");
-	  strcat(help_buf,"7.tb2 bat hoac tat\n");
-	  strcat(help_buf,"8.batca hoac tatca\n");
-	  SentEnglis_SIMmsg(decodeSMS.numberPhone,help_buf);
-	
-	  //printf("10.PH hoac KPH\n");
-	  //printf("11.LOG\n");
+    char help_buf[160] = {0};
+    strcat(help_buf,"1.Hengio:Giobat1,Giotat1,..,..,\n");
+    strcat(help_buf,"2.Thoigian\n");
+    strcat(help_buf,"3.Caidatgio:hh,mm,ss\n");
+    strcat(help_buf,"4.Caidatngay:dd,mm,yy\n");
+    strcat(help_buf,"5.Chedo:0 hoac 1\n");
+    //printf("    0 :Gio tu dong theo tung mua\n");
+    //printf("    1 :Tu cai dat \n");
+    //printf("6.Mua:0 hoac 1,giobat,phutbat,giotat,phuttat\n");
+    //printf("    0 :mua he\n");
+    //printf("    1 :mua dong\n");
+    strcat(help_buf,"6.tb1 bat hoac tat\n");
+    strcat(help_buf,"7.tb2 bat hoac tat\n");
+    strcat(help_buf,"8.batca hoac tatca\n");
+    SentEnglis_SIMmsg(decodeSMS.numberPhone,help_buf);
+
+    //printf("10.PH hoac KPH\n");
+    //printf("11.LOG\n");
 
 }
 /*******************************************************************************
@@ -105,7 +105,7 @@ extern void help()
 *******************************************************************************/
 uint8_t UARTCommand(char *buffer,UART_PACKKET_STRUCT *uart_packet)
 {
-		static STRUCTCOMMAND result;
+		STRUCTCOMMAND result;
 		char *p;
 		/*get header command*/
 		result = GetCmdData(buffer);
@@ -167,13 +167,13 @@ uint8_t UARTCommand(char *buffer,UART_PACKKET_STRUCT *uart_packet)
 		}
 		else if(strcmp(p,"CAIDATGIO") == 0)
 		{
-				uart_packet->timeset = result.data;
-				return TIMESET;
+            memcpy(uart_packet->timeset,result.data,3);
+            return TIMESET;
 		}		
 		else if(strcmp(p,"CAIDATNGAY") == 0)
 		{
-				uart_packet->dateset = result.data;
-				return DATESET;
+            memcpy(uart_packet->dateset,result.data,3);
+            return DATESET;
 		}	
 		else if(strcmp(p,"CHEDO") == 0)
 		{
@@ -252,13 +252,13 @@ uint8_t UARTCommand(char *buffer,UART_PACKKET_STRUCT *uart_packet)
       }      
 		else if(!strcmp(p,"PH"))
 		{
-					function_eeprom = SAVEMEM;
-					return PH;
+            function_eeprom = SAVEMEM;
+            return PH;
 		} 	  
 		else if(!strcmp(p,"KPH"))
 		{
-					function_eeprom = SAVEMEM;
-					return KPH;
+                function_eeprom = SAVEMEM;
+                return KPH;
 		} 	  	  
 		else if(strcmp(p,"LOG") == 0)
 		{
@@ -266,11 +266,11 @@ uint8_t UARTCommand(char *buffer,UART_PACKKET_STRUCT *uart_packet)
 		}
 		else if(strcmp(p,"HELP") == 0)
 		{
-				return HELP;
+			return HELP;
 		}
 		else
 		{
-				return CMDERR;
+			return CMDERR;
 		}
 
 }
@@ -286,14 +286,14 @@ uint8_t UARTCommand(char *buffer,UART_PACKKET_STRUCT *uart_packet)
 void CommadProcess(TIMESETUP timeonoffG[][10],char *buffer)
 {
 	uint8_t command;
-	static UART_PACKKET_STRUCT uart_packet;
+	UART_PACKKET_STRUCT uart_packet;
 	char db_vt;
 	char timesetflag = 0;
 	DATE_STRUCT timecurr,timeset;
 	function_eeprom = UNSAVE;	
 	db_vt = SearchExistUser(decodeSMS.numberPhone);// xem sdt nam o vt nao cua danh ba
-	if(db_vt == 10)
-      return ;   
+	//if(db_vt == 10)
+    //  return ;   
 	command = UARTCommand(buffer,&uart_packet);
 	switch(command)
 	{
@@ -312,30 +312,24 @@ void CommadProcess(TIMESETUP timeonoffG[][10],char *buffer)
 			SentEnglis_SIMmsg(decodeSMS.numberPhone,"Hen gio cho thiet bi 2 thanh cong\n");
 			break;	      
 		case TIMESET: //set time clock command
-			timeset = GetTimeCurrent(RTC_GetCounter());
+			timeset = get_cclk();
 			timeset.HOUR 		= uart_packet.timeset[0];
 			timeset.MINUTE 	= uart_packet.timeset[1];
 			timeset.SECOND 	= uart_packet.timeset[2];
-			RTC_Configuration();
-			Time_Adjust(timeset);
-			BKP_WriteBackupRegister(BKP_DR1, 0xA5A5);  
-			timesetflag = 1;
-			//SentEnglis_SIMmsg(decodeSMS.numberPhone,"Cai dat gio thanh cong\n");
+            SetingCCLK(timeset ,"+07");
+            //while(1);
+			SentEnglis_SIMmsg("0944500186","Cai dat gio thanh cong\n");
 		case DATESET: //set date command
-			if(0 == timesetflag){
-			timeset = GetTimeCurrent(RTC_GetCounter());
+			timeset = get_cclk();
 			timeset.DAY 		= uart_packet.dateset[0];
-			timeset.MONTH 	= uart_packet.dateset[1];
-			timeset.YEAR 		= 2000 + uart_packet.dateset[2];		
-			RTC_Configuration();
-			Time_Adjust(timeset);
-			BKP_WriteBackupRegister(BKP_DR1, 0xA5A5);  		
-			}
-			//SentEnglis_SIMmsg(decodeSMS.numberPhone,"Cai dat ngay thanh cong\n");
+			timeset.MONTH 	    = uart_packet.dateset[1];
+			timeset.YEAR 		= uart_packet.dateset[2];			
+            SetingCCLK(timeset ,"+07");
+			SentEnglis_SIMmsg(decodeSMS.numberPhone,"Cai dat ngay thanh cong\n");
 		case TIMEIS: //show time clock command
 		{
-      char tempbuff[50];
-			timecurr = GetTimeCurrent(RTC_GetCounter());
+            char tempbuff[50];
+			timecurr = get_cclk();
 			sprintf(tempbuff,"Gio :%d:%d:%d\nNgay : %d-%d-%d\n",timecurr.HOUR,timecurr.MINUTE,timecurr.SECOND,timecurr.DAY,timecurr.MONTH,timecurr.YEAR)	;
 			SentEnglis_SIMmsg(decodeSMS.numberPhone,tempbuff);         
 			break;	

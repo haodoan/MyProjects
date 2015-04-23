@@ -124,7 +124,7 @@ char DisconnectCall(void);
 char HangUpCall(void);
 char CallUpCall(void);
 char CCLK(void);
-char SetingCCLK(char *years,char *months,char *days,char *hours,char *minutes,char *seconds,char *timezone);
+char SetingCCLK(DATE_STRUCT clock ,char *timezone);
 char DellSms(u16 index);
 char DellAllSms(u16 total);
 char DelAllSmsCmgda(void);

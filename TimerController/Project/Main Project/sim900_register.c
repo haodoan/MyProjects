@@ -44,9 +44,9 @@ STRUCTCOMMAND_SIM900 GetCmdDataSim900(char *str)
 void SIM900_commands(char *buffer)
 {
 	STRUCTCOMMAND_SIM900 result;
-  static char tempbuff[20];
-	memset(tempbuff,0,20);
-   strcpy(tempbuff,buffer);
+    static char tempbuff[50];
+	memset(tempbuff,0,50);
+    strcpy(tempbuff,buffer);
 	/*get header command*/
 	result = GetCmdDataSim900(buffer);	
 	if(!Register_commands(result))

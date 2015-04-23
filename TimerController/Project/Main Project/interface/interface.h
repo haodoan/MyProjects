@@ -3,8 +3,8 @@
 //Struct define for data received from UART
 typedef struct {
   	char cmd[15];
-		char data_str[2][20];
-  	unsigned char data[50];
+	char data_str[2][20];
+  	uint8_t data[50];
   	unsigned char countdata; 	
 }STRUCTCOMMAND;
 
@@ -13,8 +13,8 @@ typedef struct
 {
 	TIMESETUP alarmtime[10];
 	DATE_STRUCT timecurr;
-	uint8_t *timeset;
-	uint8_t *dateset;
+	uint8_t timeset[3];
+	uint8_t dateset[3];
 	uint16_t mode;
 	uint8_t cntdata;
 	TIMESETUP summer[2];

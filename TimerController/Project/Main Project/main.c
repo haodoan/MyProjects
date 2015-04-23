@@ -107,6 +107,8 @@ void default_write_mem()
 		}		
 
 }
+
+char tes_buff[] = "CAIDATGIO 23,23,23";
 int main(void)
 {
   /*!< At this stage the microcontroller clock setting is already configured, 
@@ -117,15 +119,15 @@ int main(void)
      */     
 	char tempbuff_[50];
 	DATE_STRUCT timecurr; 
-  GSM1.flag_rx = 0;
+    GSM1.flag_rx = 0;
 	sysTick_counter = 0;
 
   /* System Clocks Configuration */
 	if (SysTick_Config(SystemCoreClock / 1000))
-  { 
+    { 
     /* Capture error */ 
     while (1);
-  }
+    }
   USART1_usart1_Configuration();
 	NVIC_usart1_Configuration();
 	GPIO_Configuration();
@@ -144,21 +146,16 @@ int main(void)
 //	STM_EVAL_LEDOff(LED3);
 //  STM_EVAL_LEDOff(LED4);
 	
-	RTC_Init();
-  if(InputGsmRi == 0) 
-	Start_Gsm();  // Kiem tra chan Ri
-	DelAllSmsCmgda();
-  delay_ms(2000);   
-  clock = get_cclk();
-  RTC_Configuration();
-  Time_Adjust(clock);
-	BKP_WriteBackupRegister(BKP_DR1, 0xA5A5); 
-	ReadMemmory(&flashv);
-//	if(flashv.cnt_user == 0xFFFF) flashv.cnt_user = 5;
-  default_write_mem();
-	delay_ms(1000);
-	timecurr = GetTimeCurrent(RTC_GetCounter());
-	sprintf(tempbuff_,"Thiet bi khoi dong luc %d:%d:%d\nNgay : %d-%d-%d\n",timecurr.HOUR,timecurr.MINUTE,timecurr.SECOND,timecurr.DAY,timecurr.MONTH,timecurr.YEAR)	;
+    if(InputGsmRi == 0) 
+    Start_Gsm();  // Kiem tra chan Ri
+    DelAllSmsCmgda();
+    delay_ms(2000);      
+    ReadMemmory(&flashv);
+    //	if(flashv.cnt_user == 0xFFFF) flashv.cnt_user = 5;
+    default_write_mem();
+    delay_ms(1000);
+    clock = get_cclk();
+    sprintf(tempbuff_,"Thiet bi khoi dong luc %d:%d:%d\nNgay : %d-%d-%d\n",clock.HOUR,clock.MINUTE,clock.SECOND,clock.DAY,clock.MONTH,clock.YEAR)	;
 //	if(flashv.user[0].PHONE_NO[0] == 0xFF)
 //		SentEnglis_SIMmsg("0944500186",tempbuff_);
 //	else
@@ -166,21 +163,22 @@ int main(void)
 	
 	while(1)
 	{				
-      
-   if(GSM1.flag_rx)
-	 {         
-         GSM1.flag_rx=0;
-         Test_echoUART(GSM1.buff_rx[GSM1.co_rx]);
-         SaveThayDoi(&flashv,function_eeprom);
-	 }
-   Time_Show(timeonoff);
- 	 if(sysTick_counter - temp_ > 500)
-		{
-			//STM_EVAL_LEDToggle(LED1);
-			STM_EVAL_LEDToggle(LED2);
- 			//STM_EVAL_LEDToggle(LED3);
- 			temp_ = sysTick_counter;
- 		}
+        SIM900_commands(tes_buff);
+        if(GSM1.flag_rx)
+        {         
+            GSM1.flag_rx=0;
+            Test_echoUART(GSM1.buff_rx[GSM1.co_rx]);
+            SaveThayDoi(&flashv,function_eeprom);
+        }
+        //Time_Show(timeonoff);
+        if(sysTick_counter - temp_ > 500)
+        {
+            //STM_EVAL_LEDToggle(LED1);
+            STM_EVAL_LEDToggle(LED2);
+            //STM_EVAL_LEDToggle(LED3);
+            temp_ = sysTick_counter;
+    
+        }
 		
 	}
 }
