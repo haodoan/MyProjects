@@ -1,6 +1,7 @@
-#include "interface.h"
+//#include "interface.h"
 #include "alarmtime.h"
 #include "flasheeprom.h"
+#include "interface.h"
 extern STRUCT_EEPROM_SAVE flashv;
 extern char status_tb[2];
 /*******************************************************************************
@@ -13,14 +14,15 @@ extern char status_tb[2];
 *******************************************************************************/
 void sapxeptime(TIMESETUP *time,int n)
 {
-	int i,j,temp,tempstatus;
+	uint16_t i,j,temp;
+    BOOL tempstatus ;
 	for (i = 0; i < n; i++){
 		time[i].hrmin = 100*time[i].hr + time[i].min;		
 	}
 	time[n].hrmin     =  0;
-	time[n].status    =  0;	
+	time[n].status    =  FALSE;	
 	time[n+1].hrmin   =  2400;
-	time[n+1].status  =  0;	
+	time[n+1].status  =  FALSE;	
 	n = n + 2;
    /*Arrange time from smallest to bigest*/
 	for (i = 0; i < n - 1; i++){
@@ -43,7 +45,7 @@ void sapxeptime(TIMESETUP *time,int n)
       time[i].hr = time[i].hrmin/100;
       time[i].min = time[i].hrmin%100;
 	}
-	if(time[n-2].status == 1) time[0].status = 1;
+	if(time[n-2].status == TRUE) time[0].status = TRUE;
 }
 /*******************************************************************************
 * Function Name  : CheckKhoang
@@ -67,24 +69,24 @@ unsigned char CheckKhoang(TIMESETUP *time,DATE_STRUCT timecurrent,int n)
 	}
 	return 50;
 }
-void PrintfData(unsigned char *GetDatastr,unsigned char n)
-{	
-   char buffer[100];
-   static char i = 0;
-	  while(n--)
-	  {
-	  	sprintf(buffer,"%d",*GetDatastr++);
-	  	printf(buffer);
-			if(i++ == 4)
-			{
-				printf(";");
-				i = 1;
-			}
-			else  printf(",");
-	  }
-		 i = 0;
-			printf(";");		
-}
+//void PrintfData(unsigned char *GetDatastr,unsigned char n)
+//{	
+//   char buffer[100];
+//   static char i = 0;
+//	  while(n--)
+//	  {
+//	  	sprintf(buffer,"%d",*GetDatastr++);
+//	  	printf(buffer);
+//			if(i++ == 4)
+//			{
+//				printf(";");
+//				i = 1;
+//			}
+//			else  printf(",");
+//	  }
+//		 i = 0;
+//			printf(";");		
+//}
  char number_alarm[2] = {0,0};
 char init_time(TIMESETUP timeonoff[][10],unsigned char season)
 {
@@ -102,10 +104,10 @@ char init_time(TIMESETUP timeonoff[][10],unsigned char season)
 			GetSeason(timeonoff[0],1);				
 			GetSeason(timeonoff[1],1);	
 		}
-		timeonoff[0][0].status  =  1;
-		timeonoff[0][1].status  =  0;
-		timeonoff[1][0].status  =  1;
-		timeonoff[1][1].status  =  0;      
+		timeonoff[0][0].status  =  TRUE;
+		timeonoff[0][1].status  =  FALSE;
+		timeonoff[1][0].status  =  TRUE;
+		timeonoff[1][1].status  =  FALSE;      
 		sapxeptime(timeonoff[0],2);
 		sapxeptime(timeonoff[1],2);
 		number_alarm[0] = 2;
@@ -113,22 +115,11 @@ char init_time(TIMESETUP timeonoff[][10],unsigned char season)
 	}
    else if(mode == 1)// che do cai dat
    {
-      cpy(timeonoff[0],flashv.alarmtime[0]);
-      cpy(timeonoff[1],flashv.alarmtime[1]); 
-			number_alarm[0] = flashv.cnt_alarm[0];
-			number_alarm[1] = flashv.cnt_alarm[1];
+        cpy(timeonoff[0],flashv.alarmtime[0]);
+        cpy(timeonoff[1],flashv.alarmtime[1]); 
+        number_alarm[0] = flashv.cnt_alarm[0];
+        number_alarm[1] = flashv.cnt_alarm[1];
    }
-   else if(mode == 0) // che do bat tat
-   {
-      if(status_tb[0])  
-				RELAY1(1);//STM_EVAL_LEDOn(LED1);
-      else  
-				RELAY1(0);//STM_EVAL_LEDOff(LED1);
-      if(status_tb[1])  
-				RELAY2(1);//STM_EVAL_LEDOn(LED2);
-      else  
-				RELAY2(0);//STM_EVAL_LEDOff(LED2);      
-   }  
    return 1;
 }
 
@@ -141,76 +132,64 @@ char init_time(TIMESETUP timeonoff[][10],unsigned char season)
 * Return         : None
 * Attention		   : None
 *******************************************************************************/
-//extern unsigned char TimeDisplay = 0;
+BOOL statuscur[2];
 void OnoffOutput(TIMESETUP timeonoff[][10])//n = 2*command_receive.data[0]
 {
-      char mode ;
-			DATE_STRUCT timecurr;
-			static char khoang[2];
-			static BOOL statuscur[2],first[2] = {TRUE,TRUE} ;
-		  /*Get time currenr here*/
-			statuscur[0] = (BOOL)timeonoff[0][khoang[0]].status;
-			statuscur[1] = (BOOL)timeonoff[1][khoang[1]].status;
-			timecurr = GetTimeCurrent(RTC_GetCounter());
-			if((timecurr.DAY == 1) && (timecurr.HOUR == 0) && (timecurr.MINUTE == 0) &&(timecurr.SECOND == 0) )
-			{
-					SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi hoat dong binh thuong\n");
-			}
-			if((timecurr.MONTH > 3)&&(timecurr.MONTH < 11))
-			{	
-					mode = init_time(timeonoff,SUMMER);
-               if(!mode) return ;
-			}
-			else
-         {
-				mode = init_time(timeonoff,WINTER);
+    char mode ;
+    DATE_STRUCT timecurr;
+			//DATE_STRUCT timecurr;
+    static char khoang[2];
+    /*Get time currenr here*/
+    statuscur[0] = (BOOL)timeonoff[0][khoang[0]].status;
+    statuscur[1] = (BOOL)timeonoff[1][khoang[1]].status;
+    timecurr = get_cclk();
+    if((timecurr.DAY == 1) && (timecurr.HOUR == 0) && (timecurr.MINUTE == 0) &&(timecurr.SECOND == 0) )
+    {
+            //SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi hoat dong binh thuong\n");
+    }
+    if((timecurr.MONTH > 3)&&(timecurr.MONTH < 11))
+    {	
+            mode = init_time(timeonoff,SUMMER);
             if(!mode) return ;
-			}
-			khoang[0] = CheckKhoang(timeonoff[0],timecurr,number_alarm[0]);
-			khoang[1] = CheckKhoang(timeonoff[1],timecurr,number_alarm[1]);
-			if((statuscur[0] ^ (BOOL)timeonoff[0][khoang[0]].status)|first[0])
-			{           
-            first[0] = FALSE;
-				if((BOOL)timeonoff[0][khoang[0]].status == 1) 
-				{
-                  //STM_EVAL_LEDOn(LED1);
-					RELAY1(1);
-					if(flashv.message_report == 1)
-						SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 1 Bat\n");
-                  //STM_EVAL_LEDOn(RELAY);
-                 // printf("Relay 1 On\r\n");
-				}
-				else 
-				{
-					RELAY1(0);
-					if(flashv.message_report == 1)
-						SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 1 Tat\n");
-                  //STM_EVAL_LEDOff(LED1);
-                  //STM_EVAL_LEDOff(RELAY);
-                 // printf("Relay 1 Off\r\n");
-				}
-			}	
-			if((statuscur[1] ^ (BOOL)timeonoff[1][khoang[1]].status)|first[1])
-			{
-					first[1] = FALSE;
-					if((BOOL)timeonoff[1][khoang[1]].status == 1) 
-               {
-                  //STM_EVAL_LEDOn(LED2);
-					RELAY2(1);
-					if(flashv.message_report == 1)
-						SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 2 Bat\n");
-                  //STM_EVAL_LEDOn(RELAY);
-                 // printf("Relay 2 On\r\n");
-               }
-					else 
-               {
-					RELAY2(0);
-					if(flashv.message_report == 1)
-						SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 2 Tat\n");
-                  //STM_EVAL_LEDOff(LED2);
-                  //STM_EVAL_LEDOff(RELAY);
-                 // printf("Relay 2 Off\r\n");
-               }
-			}	         
+    }
+    else
+    {
+        mode = init_time(timeonoff,WINTER);
+        if(!mode) return ;
+    }
+    khoang[0] = CheckKhoang(timeonoff[0],timecurr,number_alarm[0]);
+    khoang[1] = CheckKhoang(timeonoff[1],timecurr,number_alarm[1]);
+    if((BOOL)(statuscur[0] ^ (BOOL)timeonoff[0][khoang[0]].status) == TRUE)
+    {           
+        //first[0] = FALSE;
+        if((BOOL)timeonoff[0][khoang[0]].status == 1) 
+        {
+            RELAY1(1);
+            if(flashv.message_report == 1)
+                SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 1 da duoc bat\n");
+        }
+        else 
+        {
+            RELAY1(0);
+            if(flashv.message_report == 1)
+                SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 1 da Tat\n");
+        }
+    }	
+    if((BOOL)((BOOL)statuscur[1] ^ (BOOL)timeonoff[1][khoang[1]].status) == TRUE)
+    {
+        //first[1] = FALSE;
+        if((BOOL)timeonoff[1][khoang[1]].status == 1) 
+        {
+            RELAY2(1);
+            if(flashv.message_report == 1)
+                SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 2 da duoc bat\n");
+        }
+        else 
+        {
+            RELAY2(0);
+            if(flashv.message_report == 1)
+                SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi 2 da Tat\n");
+        }
+    }	         
 }
 

@@ -1,10 +1,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "sim900_register.h"
-#include "flasheeprom.h"
+//#include "flasheeprom.h"
 #include "interface.h"
-
-
 /*************************************************************
 Dang ki 
    DK    ADMIN PASSWORD                      Dang ki ADMIN
@@ -25,10 +23,12 @@ extern STRUCT_EEPROM_SAVE flashv;
 //Ham get ma lenh va tham so cua tin nhan
 STRUCTCOMMAND_SIM900 GetCmdDataSim900(char *str)
 {
-		STRUCTCOMMAND_SIM900 command_receive;
-		char * pch;
- 		 int i=0;		 
-		 pch = strtok (str," :,=#");  
+		 STRUCTCOMMAND_SIM900 command_receive;
+         char * pch;
+         char  buffer[50];
+ 		 int i=0;		
+         strcpy(buffer,str);
+		 pch = strtok (buffer," :,=#");  
 		 strcpy(command_receive.CMD,pch);
 		 while (pch != NULL)
 		 { 
@@ -43,14 +43,21 @@ STRUCTCOMMAND_SIM900 GetCmdDataSim900(char *str)
 // Ham Thuc thi cac ma lenh tin nhan nhan duoc cua Sim900
 void SIM900_commands(char *buffer)
 {
-	STRUCTCOMMAND_SIM900 result;
-    static char tempbuff[50];
-	memset(tempbuff,0,50);
-    strcpy(tempbuff,buffer);
+	STRUCTCOMMAND result;
+    STRUCTCOMMAND_SIM900 result_ ;
+    UART_PACKKET_STRUCT uart_packet;
+    uint8_t command ;
 	/*get header command*/
-	result = GetCmdDataSim900(buffer);	
-	if(!Register_commands(result))
-		CommadProcess(timeonoff,tempbuff);
+	//result = GetCmdDataSim900(buffer);	
+    		/*get header command*/    
+    result_ = GetCmdDataSim900(buffer);
+	if(!Register_commands(result_))
+    {
+        result = GetCmdData(buffer); 
+        command = UARTCommand(&uart_packet, result) ;
+        CommadProcess(timeonoff, uart_packet, command);
+    }
+        
  //  CommadProcess(timeonoff,decodeSMS.contentTextSms);
 }
 //Ham kiem tra su ton tai cua user trong danh ba

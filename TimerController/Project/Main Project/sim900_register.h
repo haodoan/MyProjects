@@ -3,6 +3,7 @@
 
 #include "simcom.h"
 #include "alarmtime.h"
+
 //commands register
 
 /*
@@ -14,7 +15,7 @@ XDK MK
 //Struct define for data received from UART
 typedef struct {
   	char CMD[10];
-		char DATA[6][20];
+	char DATA[6][20];
   	unsigned char CNT_DATA; 	
 }STRUCTCOMMAND_SIM900;
 

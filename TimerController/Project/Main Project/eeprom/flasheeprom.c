@@ -1,4 +1,5 @@
 #include "flasheeprom.h"
+#include "sim900_register.h"
 volatile FLASH_Status FLASHStatus = FLASH_COMPLETE;
 FLASH_Status FlashWriteEEprom(void *Data,uint16_t write_number)
 {

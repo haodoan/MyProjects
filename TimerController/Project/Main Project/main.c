@@ -71,12 +71,12 @@ SMS_GSM decodeSMS;
 extern TIMESETUP timeonoff[2][10];
 extern char function_eeprom;
 STRUCT_EEPROM_SAVE flashv;
-char status_tb[2]={0,0};
-u32 temp_=0;
+uint8_t status_tb[2]={0,0};
+uint32_t temp_=0 ,time_for_update = 0;
 DATE_STRUCT clock;
 
 #define CNT_USER_DEFAULT 		0
-#define MODE_SET_DEFAULT		0
+#define MODE_SET_DEFAULT		1
 
 
 
@@ -84,31 +84,33 @@ void default_write_mem()
 {
 		if(flashv.cnt_user == 0xFFFF) flashv.cnt_user = CNT_USER_DEFAULT;
 		if(flashv.mode == 0xFFFF) 		flashv.mode  		= MODE_SET_DEFAULT;
-		if(flashv.message_report == 0xFF) flashv.message_report = 0;
+		if(flashv.message_report == 0xFF) flashv.message_report = 1;
 		if(flashv.cnt_alarm[0] == 0xFF) flashv.cnt_alarm[0] = 0;
 		if(flashv.cnt_alarm[1] == 0xFF) flashv.cnt_alarm[1] = 0;
 		if(flashv.summer[0].hr == 0xFF) 		
 		{
 				flashv.summer[0].hr =  SUMMER_HR_ON_DEFAULT;
 				flashv.summer[0].min = SUMMER_MIN_ON_DEFAULT;
-				flashv.summer[0].status = 1;
+				flashv.summer[0].status = TRUE;
 				flashv.summer[1].hr = WINTER_HR_OFF_DEFAULT;
 				flashv.summer[1].min = WINTER_MIN_OFF_DEFAULT;
-				flashv.summer[1].status = 0;
+				flashv.summer[1].status = FALSE;
 		}
 		if(flashv.winter[0].hr == 0xFF) 		
 		{
 				flashv.winter[0].hr =  WINTER_HR_ON_DEFAULT;
 				flashv.winter[0].min = WINTER_MIN_ON_DEFAULT;
-				flashv.winter[0].status = 1;
+				flashv.winter[0].status = TRUE;
 				flashv.winter[1].hr = WINTER_HR_OFF_DEFAULT;
 				flashv.winter[1].min = WINTER_MIN_OFF_DEFAULT;
-				flashv.winter[1].status = 0;
+				flashv.winter[1].status = FALSE;
 		}		
 
 }
 
-char tes_buff[] = "CAIDATGIO 23,23,23";
+//char tes_buff[] = "HENGIO1 2,1,2,2,2,3,2,4,2,5,2,6,2,7,2,8";
+//char tes_buff[] = "DK ADMIN 123456";
+//char tes_buff[] = "CAIDATGIO 1,40,0";
 int main(void)
 {
   /*!< At this stage the microcontroller clock setting is already configured, 
@@ -118,7 +120,6 @@ int main(void)
        system_stm32f10x.c file
      */     
 	char tempbuff_[50];
-	DATE_STRUCT timecurr; 
     GSM1.flag_rx = 0;
 	sysTick_counter = 0;
 
@@ -128,24 +129,12 @@ int main(void)
     /* Capture error */ 
     while (1);
     }
-  USART1_usart1_Configuration();
+    USART1_usart1_Configuration();
 	NVIC_usart1_Configuration();
 	GPIO_Configuration();
-	//STM_EVAL_LEDInit(LED1);
+	STM_EVAL_LEDInit(LED1);
 	STM_EVAL_LEDInit(LED2);
-	//STM_EVAL_LEDInit(LED3);
-  //STM_EVAL_LEDInit(LED4);
-
-//	STM_EVAL_LEDOn(LED1);
-//	STM_EVAL_LEDOn(LED2);
-//	STM_EVAL_LEDOn(LED3);
-//	STM_EVAL_LEDOn(LED4);
-//	delay_ms(1000);   
-//	STM_EVAL_LEDOff(LED1);
-//	STM_EVAL_LEDOff(LED2);
-//	STM_EVAL_LEDOff(LED3);
-//  STM_EVAL_LEDOff(LED4);
-	
+    STM_EVAL_LEDInit(LED3); 	
     if(InputGsmRi == 0) 
     Start_Gsm();  // Kiem tra chan Ri
     DelAllSmsCmgda();
@@ -155,31 +144,35 @@ int main(void)
     default_write_mem();
     delay_ms(1000);
     clock = get_cclk();
-    sprintf(tempbuff_,"Thiet bi khoi dong luc %d:%d:%d\nNgay : %d-%d-%d\n",clock.HOUR,clock.MINUTE,clock.SECOND,clock.DAY,clock.MONTH,clock.YEAR)	;
-//	if(flashv.user[0].PHONE_NO[0] == 0xFF)
-//		SentEnglis_SIMmsg("0944500186",tempbuff_);
-//	else
-//		SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,tempbuff_); 
-	
+    sprintf(tempbuff_,"Thiet bi khoi dong luc %02d:%02d:%02d\nNgay : %02d-%02d-%02d\n",clock.HOUR,clock.MINUTE,clock.SECOND,clock.DAY,clock.MONTH,clock.YEAR)	;
+	if(flashv.user[0].PHONE_NO[0] == 0xFF)
+		SentEnglis_SIMmsg("0944500186",tempbuff_);
+	else
+		SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,tempbuff_); 
 	while(1)
-	{				
-        SIM900_commands(tes_buff);
+	{	
+                
         if(GSM1.flag_rx)
         {         
             GSM1.flag_rx=0;
             Test_echoUART(GSM1.buff_rx[GSM1.co_rx]);
             SaveThayDoi(&flashv,function_eeprom);
-        }
-        //Time_Show(timeonoff);
-        if(sysTick_counter - temp_ > 500)
+        }        
+        if(sysTick_counter - temp_ > 1000)
         {
-            //STM_EVAL_LEDToggle(LED1);
             STM_EVAL_LEDToggle(LED2);
-            //STM_EVAL_LEDToggle(LED3);
-            temp_ = sysTick_counter;
-    
+            temp_ = sysTick_counter; 
+            if(GetMode() == 0)
+            {
+                (status_tb[0] == 1)?RELAY1(1):RELAY1(0);
+                (status_tb[1] == 1)?RELAY2(1):RELAY2(0);      
+            }
         }
-		
+        if(sysTick_counter - time_for_update > 60000)
+        {
+            time_for_update = sysTick_counter;
+            Time_Show(timeonoff);    
+        }		
 	}
 }
 
@@ -194,15 +187,15 @@ int main(void)
 void GPIO_Configuration(void)
 {  
   	  
-		GPIO_InitTypeDef GPIO_InitStructure; 				 	
-	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);	 			//GPIOB clock
+	GPIO_InitTypeDef GPIO_InitStructure; 				 	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);	 			//GPIOB clock
   	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;  	//…Ë÷√GPIOB0°¢GPIOB1°¢GPIOB12
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				  	
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;				  	
   	GPIO_Init(GPIOA, &GPIO_InitStructure);							  	 	
 	
 	
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	 			//GPIOB clock
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	 			//GPIOB clock
   	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7 |GPIO_Pin_8 |GPIO_Pin_9;  	//…Ë÷√GPIOB0°¢GPIOB1°¢GPIOB12
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;				  	
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;				  	
@@ -288,10 +281,10 @@ char CallOnOff(char *ID)
       HangUpCall();       //huy cuoc goi
       if(mode == 0)
       {
-				if(strcmp(decodeCALL.numberPhone,flashv.user[0].PHONE_NO))
-					status_tb[0] = !status_tb[0];
-				else
-					status_tb[1] = !status_tb[1];
+        if(strcmp(decodeCALL.numberPhone,flashv.user[0].PHONE_NO))
+            status_tb[0] = !status_tb[0];
+        else
+            status_tb[1] = !status_tb[1];
 				//status_tb[1] = !status_tb[1];
       }  
         return 0;

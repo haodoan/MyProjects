@@ -51,7 +51,7 @@ extern void Pwrkey(char key)
 *******************************************************************************/
 extern void GSM_putsf(char *string)
 {
-	usart1_putsf(string);
+	printf(string);
 }
 /*******************************************************************************
 * Function Name  : GSM_putsf
@@ -114,7 +114,7 @@ extern char GetEcho(char *string)
 	{
 		GSM1.flag_rx = 0;
 		if(strstr(GSM1.buff_rx[GSM1.co_rx],string))	/*kiem tra chuoi~*/
-				return 1;
+            return 1;
 	}
 	GSM1.flag_rx = 0;
  	return 0;
@@ -471,16 +471,16 @@ extern char decode_call(char *textSms,CALL_GSM *call)
 * Return         : co gui duoc thanh cong hay khong
 * Attention		 : None
 *******************************************************************************/
-extern char SentEnglis_SIMmsg(char *phonenum,char *msgstr)
+char SentEnglis_SIMmsg(char *phonenum,const char *msgstr)
 {	
 	char phone[30];	
 	sprintf(phone,"AT+CMGS=%c+84%s%c\r",34,phonenum+1,34);
 	GSM_putsf(phone);
 	if(GetEcho(">")) 
    {
-     GSM_putsf(msgstr);
-     usart1_putch(26);
-     if(GetEcho("OK")) return 1;
+     printf("%s%c",msgstr,26);
+     if(GetEcho("OK")) 
+         return 1;
       return 0;
    }
 	return 0;
@@ -572,7 +572,7 @@ extern char CallUpCall(void)
 extern char CCLK(void)
 {
        GSM_putsf("AT+CCLK?\r");
-			// if (!GetEcho("OK")) return 0;
+			 //if (!GetEcho("OK")) return 0;
        return 1;
 }
 
@@ -623,9 +623,10 @@ DATE_STRUCT get_cclk(void)
 char SetingCCLK(DATE_STRUCT clock ,char *timezone)
 {
      char buffSettingTime[50] = {0};
-     sprintf(buffSettingTime,"AT+CCLK=%c%d/%d/%d,%d:%d:%d%s%c\r",34,clock.YEAR,clock.MONTH,clock.DAY,clock.HOUR,clock.MINUTE,clock.SECOND,timezone,34);
+     sprintf(buffSettingTime,"AT+CCLK=%c%02d/%02d/%02d,%02d:%02d:%02d%s%c\r",34,clock.YEAR,clock.MONTH,clock.DAY,clock.HOUR,clock.MINUTE,clock.SECOND,timezone,34);
      GSM_putsf(buffSettingTime);
-     return 1;
+     if(!GetEcho("OK"))  return 0;
+     return 1;     
 }
 /*******************************************************************************
 * Function Name  : DellSms

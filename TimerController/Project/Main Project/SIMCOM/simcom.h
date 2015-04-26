@@ -28,7 +28,6 @@
 #include <ctype.h>
 #include <systick.h>
 #include <comm.h>
-#include <simcom.h>
 #include "calendar.h"
 /*
  *   *************DEFINE****************************
@@ -116,7 +115,7 @@ char ReadEnglis_SIMmsg(unsigned char msgnum);
 char *GetPointText(char *textsms,char checkText,char number);
 char decode_sms(char *textSms,SMS_GSM *sms1);
 char decode_call(char *textSms,CALL_GSM *call);
-char SentEnglis_SIMmsg(char *phonenum,char *msgstr);
+char SentEnglis_SIMmsg(char *phonenum,const char *msgstr);
 char WaitSendSms(void);
 char WaitSendSMS(void);
 char CallPhone(char *phonenum);

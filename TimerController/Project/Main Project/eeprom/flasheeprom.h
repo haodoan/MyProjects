@@ -2,9 +2,9 @@
 #define __FLASHEEPROM_H
 
 #include "alarmtime.h"
-#include "sim900_register.h"
 #include "stm32f10x.h"
 #include "stm32f10x_flash.h"
+#include "sim900_register.h"
 
 #define FLASH_PAGE_SIZE         ((uint16_t)0x400)
 #define BANK1_WRITE_START_ADDR  ((uint32_t)0x08007800)

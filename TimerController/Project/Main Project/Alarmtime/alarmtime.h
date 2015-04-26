@@ -7,12 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stm32f10x.h>
-
+#include "calendar.h"
 typedef struct{
 	uint16_t hrmin;
 	uint8_t hr;
 	uint8_t min;
-	uint16_t status;
+	BOOL status;
 } TIMESETUP;
 
 

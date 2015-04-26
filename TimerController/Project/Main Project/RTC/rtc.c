@@ -192,9 +192,9 @@ DATE_STRUCT GetTimeCurrent(uint32_t TimeVar)
 
 void Time_Show(TIMESETUP timeonoff[][10]){
 {
-		if(TimeDisplay)
+		//if(TimeDisplay)
 		{
-			TimeDisplay = 0;
+			//TimeDisplay = 0;
 			OnoffOutput(timeonoff);
 		}
 	}

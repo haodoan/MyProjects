@@ -1,6 +1,9 @@
 #include "alarmtime.h"
 #include "simcom.h"
+#include "string.h"
+#include "flasheeprom.h"
 //Struct define for data received from UART
+
 typedef struct {
   	char cmd[15];
 	char data_str[2][20];
@@ -24,6 +27,9 @@ typedef struct
 //TIMESETUP *GetSeason(uint8_t sea);
 void GetTimeAlarm(TIMESETUP *timeonoff);
 void cpy(TIMESETUP *a,TIMESETUP *b);
-void CommadProcess(TIMESETUP timeonoffG[][10],char *buffer);
 void GetSeason(TIMESETUP *timeonoff,uint8_t sea);
 uint8_t GetMode(void);
+uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result);
+void CommadProcess(TIMESETUP timeonoffG[][10],UART_PACKKET_STRUCT uart_packet , uint8_t command);
+STRUCTCOMMAND GetCmdData(char *str);
+
