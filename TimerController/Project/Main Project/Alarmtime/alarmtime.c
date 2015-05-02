@@ -120,6 +120,11 @@ char init_time(TIMESETUP timeonoff[][10],unsigned char season)
         number_alarm[0] = flashv.cnt_alarm[0];
         number_alarm[1] = flashv.cnt_alarm[1];
    }
+   else
+   {
+
+        return 0;
+   }
    return 1;
 }
 
