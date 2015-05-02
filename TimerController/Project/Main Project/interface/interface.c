@@ -184,7 +184,7 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
 		{
          if(!strcmp(result.data_str[0],"HENGIO"))
             uart_packet->mode = 1;
-         else if(!strcmp(result.data_str[0],"TUDONG"))
+         else if(!strcmp(result.data_str[0],"THEOMUA"))
             uart_packet->mode = 2;
          else if(!strcmp(result.data_str[0],"BATTAT"))
             uart_packet->mode = 0;
@@ -192,9 +192,9 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
 			return MODE;
 
 		}
-		else if(strcmp(p,"MUA") == 0)
+		else if(strcmp(p,"MUA") == 0) 
 		{
-			if(result.data[0] == 0){
+			if(result.data[0] == 0){ // mua he
 				uart_packet->summer[0].hr =  result.data[1];
 				uart_packet->summer[0].min = result.data[2];
 				uart_packet->summer[0].status = TRUE;
@@ -203,7 +203,7 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
 				uart_packet->summer[1].status = FALSE;
 				return SEASONSUMMER;	
 			}
-			else if(result.data[0] == 1){
+			else if(result.data[0] == 1){ // mua dong 
 				uart_packet->winter[0].hr =  result.data[1];
 				uart_packet->winter[0].min = result.data[2];
 				uart_packet->winter[0].status = TRUE;
