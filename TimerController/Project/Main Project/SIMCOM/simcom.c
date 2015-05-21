@@ -473,7 +473,7 @@ extern char decode_call(char *textSms,CALL_GSM *call)
 *******************************************************************************/
 char SentEnglis_SIMmsg(char *phonenum,const char *msgstr)
 {	
-	char phone[30];	
+	char phone[30] ={0};	
 	sprintf(phone,"AT+CMGS=%c+84%s%c\r",34,phonenum+1,34);
 	GSM_putsf(phone);
 	if(GetEcho(">")) 

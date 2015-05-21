@@ -31,7 +31,7 @@ void sapxeptime(TIMESETUP *time,int n);
 unsigned char CheckKhoang(TIMESETUP *time,DATE_STRUCT timecurrent,int n);
 unsigned char GetCommand(unsigned char *command);
 void nhaptimeonoff(TIMESETUP *timeonoff,int batnumber,int tatnumber);
-void OnoffOutput(TIMESETUP timeonoff[][10]);
+void OnoffOutput(TIMESETUP timeonoff[][10] , DATE_STRUCT timecurr);
 void ProcessTimeTask(unsigned char FrameAvaiable,char *str,TIMESETUP *timeonoff);
 
 #define SUMMER_HR_ON_DEFAULT		   	18

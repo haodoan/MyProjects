@@ -10,6 +10,7 @@ Season:Summer,HrOn:MinOn,HrOff:MinOff
 *******************************************************************/
 #include "interface.h"
 extern char function_eeprom ;
+u8 time_flag_set = 0;
 // enum of commander
 enum
 {
@@ -173,6 +174,7 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
 		else if(strcmp(p,"CAIDATGIO") == 0)
 		{
             memcpy(uart_packet->timeset,result.data,3);
+            time_flag_set = 1 ;
             return TIMESET;
 		}		
 		else if(strcmp(p,"CAIDATNGAY") == 0)
@@ -329,8 +331,10 @@ void CommadProcess(TIMESETUP timeonoffG[][10],UART_PACKKET_STRUCT uart_packet , 
 {
 	//uint8_t command;
 	//UART_PACKKET_STRUCT uart_packet;
-	char db_vt;
-	DATE_STRUCT timecurr,timeset;
+	DATE_STRUCT timeset;
+    DATE_STRUCT  timecurr ;
+    char db_vt;    	
+    
 	function_eeprom = UNSAVE;	
 	db_vt = SearchExistUser(decodeSMS.numberPhone);// xem sdt nam o vt nao cua danh ba
 	if(db_vt == 10)
@@ -398,11 +402,11 @@ void CommadProcess(TIMESETUP timeonoffG[][10],UART_PACKKET_STRUCT uart_packet , 
 				2 - auto season
 				1 - fix time 
 				0 - Manual setting on off
-			 **/
-			 flashv.mode = uart_packet.mode;	
+			 **/       
+			 flashv.mode = uart_packet.mode ;
 			 if(flashv.mode == 0)	SentEnglis_SIMmsg(decodeSMS.numberPhone,"Ban da cai dat che do bat tat thanh cong\r");
 			 else if(flashv.mode == 1)	SentEnglis_SIMmsg(decodeSMS.numberPhone,"Ban da cai dat che do cai dat hen gio \r");
-			 else if(flashv.mode == 2)	SentEnglis_SIMmsg(decodeSMS.numberPhone,"Ban da cai dat che do tu dong thanh cong\r");
+			 else if(flashv.mode == 2)	SentEnglis_SIMmsg(decodeSMS.numberPhone,"Ban da cai dat che theo mua thanh cong\r");
 			 function_eeprom = SAVEMEM;	
 			 break;			
 		case SEASONSUMMER:

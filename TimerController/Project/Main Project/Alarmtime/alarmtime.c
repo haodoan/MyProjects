@@ -138,30 +138,24 @@ char init_time(TIMESETUP timeonoff[][10],unsigned char season)
 * Attention		   : None
 *******************************************************************************/
 BOOL statuscur[2];
-void OnoffOutput(TIMESETUP timeonoff[][10])//n = 2*command_receive.data[0]
+void OnoffOutput(TIMESETUP timeonoff[][10] , DATE_STRUCT timecurr)//n = 2*command_receive.data[0]
 {
     char mode ;
-    DATE_STRUCT timecurr;
-			//DATE_STRUCT timecurr;
     static char khoang[2];
     /*Get time currenr here*/
-    statuscur[0] = (BOOL)timeonoff[0][khoang[0]].status;
-    statuscur[1] = (BOOL)timeonoff[1][khoang[1]].status;
-    timecurr = get_cclk();
-    if((timecurr.DAY == 1) && (timecurr.HOUR == 0) && (timecurr.MINUTE == 0) &&(timecurr.SECOND == 0) )
-    {
-            //SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,"Thiet bi hoat dong binh thuong\n");
-    }
+    //timecurr = get_cclk();
     if((timecurr.MONTH > 3)&&(timecurr.MONTH < 11))
     {	
-            mode = init_time(timeonoff,SUMMER);
-            if(!mode) return ;
+        mode = init_time(timeonoff,SUMMER);
+        if(!mode) return ;
     }
     else
     {
         mode = init_time(timeonoff,WINTER);
         if(!mode) return ;
     }
+    statuscur[0] = (BOOL)timeonoff[0][khoang[0]].status;
+    statuscur[1] = (BOOL)timeonoff[1][khoang[1]].status;
     khoang[0] = CheckKhoang(timeonoff[0],timecurr,number_alarm[0]);
     khoang[1] = CheckKhoang(timeonoff[1],timecurr,number_alarm[1]);
     if((BOOL)(statuscur[0] ^ (BOOL)timeonoff[0][khoang[0]].status) == TRUE)

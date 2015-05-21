@@ -70,6 +70,7 @@ SMS_GSM decodeSMS;
 //extern STRUCT_USER user[6]; 
 extern TIMESETUP timeonoff[2][10];
 extern char function_eeprom;
+extern u8 time_flag_set ;
 STRUCT_EEPROM_SAVE flashv;
 uint8_t status_tb[2]={0,0};
 uint32_t temp_=0 ,time_for_update = 0;
@@ -157,6 +158,12 @@ int main(void)
             GSM1.flag_rx=0;
             Test_echoUART(GSM1.buff_rx[GSM1.co_rx]);
             SaveThayDoi(&flashv,function_eeprom);
+        }
+        if(((sysTick_counter - time_for_update) > 60000 ) || (time_flag_set == 1))
+        {
+            time_for_update = sysTick_counter;
+            clock = get_cclk();
+            time_flag_set = 0;
         }        
         if(sysTick_counter - temp_ > 1000)
         {
@@ -167,11 +174,7 @@ int main(void)
                 (status_tb[0] == 1)?RELAY1(1):RELAY1(0);
                 (status_tb[1] == 1)?RELAY2(1):RELAY2(0);      
             }
-        }
-        if(sysTick_counter - time_for_update > 60000)
-        {
-            time_for_update = sysTick_counter;
-            Time_Show(timeonoff);    
+            OnoffOutput(timeonoff,clock); 
         }		
 	}
 }
