@@ -3,7 +3,6 @@
 #include "flasheeprom.h"
 #include "interface.h"
 extern STRUCT_EEPROM_SAVE flashv;
-extern char status_tb[2];
 /*******************************************************************************
 * Function Name  : sapxeptime
 * Description    : Sap xep cac thoi gian bat tat theo truc thoi gian 

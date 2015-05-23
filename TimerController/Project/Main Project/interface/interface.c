@@ -35,8 +35,6 @@ enum
     MODE_ERROR,
 	CMDERR
 };
-
-extern char status_tb[2];
 uint8_t mode = 0;
 extern SMS_GSM decodeSMS;
 extern char function_eeprom ;
@@ -224,12 +222,10 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
          	{             
 				if(!strcmp(result.data_str[0],"BAT"))
 				{				 
-				    status_tb[0] = 1;     
                     return TB1ON ;
 				}
 				else if(!strcmp(result.data_str[0],"TAT"))
-				{
-				    status_tb[0] = 0;   
+				{  
                     return TB1OFF;
 				}
 				else
@@ -249,13 +245,11 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
             if(0 == mode)
             {             
                 if(!strcmp(result.data_str[0],"BAT"))
-                {                
-                    status_tb[1] = 1;     
+                {                   
                     return TB2ON;
                 }
                 else if(!strcmp(result.data_str[0],"TAT"))
-                {
-                    status_tb[1] = 0;   
+                {  
                     return TB2OFF;
                 }
                 else
@@ -271,9 +265,7 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
         else if(!strcmp(p,"BATCA"))
         {
             if(0  == mode)
-            {
-                status_tb[0] = 1;
-                status_tb[1] = 1;   
+            {  
                 return TBALLON;
             }
             else
@@ -284,9 +276,7 @@ uint8_t UARTCommand(UART_PACKKET_STRUCT *uart_packet, STRUCTCOMMAND result)
         else if(!strcmp(p,"TATCA"))
         {
             if(0 == mode)
-            {
-                status_tb[0] = 0;
-                status_tb[1] = 0;   
+            {   
                 return TBALLOFF;
             }
             else
@@ -422,21 +412,29 @@ void CommadProcess(TIMESETUP timeonoffG[][10],UART_PACKKET_STRUCT uart_packet , 
 			 function_eeprom = SAVEMEM;		
 			 break;				
         case TB1ON: 
+            RELAY1(1);
             SentEnglis_SIMmsg(decodeSMS.numberPhone,"Thiet bi 1 da bat\n");
             break;
-        case TB1OFF: 
+        case TB1OFF:
+            RELAY1(0) ;
             SentEnglis_SIMmsg(decodeSMS.numberPhone,"Thiet bi 1 da tat\n");      
             break;
         case TB2ON: 
+            RELAY2(1) ;
             SentEnglis_SIMmsg(decodeSMS.numberPhone,"Thiet bi 2 da bat\n");      
             break;
         case TB2OFF: 
+            RELAY2(0);
             SentEnglis_SIMmsg(decodeSMS.numberPhone,"Thiet bi 2 da tat\n");                  
             break;
         case TBALLON: 
+            RELAY1(1);
+            RELAY2(1) ;
             SentEnglis_SIMmsg(decodeSMS.numberPhone,"Da bat ca hai thiet bi\n");
             break ;
         case TBALLOFF: 
+            RELAY1(0) ;
+            RELAY2(0) ;
             SentEnglis_SIMmsg(decodeSMS.numberPhone,"Da tat ca hai thiet bi\n");           
             break;                                                            
 		case LOG : 

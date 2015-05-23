@@ -72,7 +72,6 @@ extern TIMESETUP timeonoff[2][10];
 extern char function_eeprom;
 extern u8 time_flag_set ;
 STRUCT_EEPROM_SAVE flashv;
-uint8_t status_tb[2]={0,0};
 uint32_t temp_=0 ,time_for_update = 0;
 DATE_STRUCT clock;
 
@@ -141,7 +140,6 @@ int main(void)
     DelAllSmsCmgda();
     delay_ms(2000);      
     ReadMemmory(&flashv);
-    //	if(flashv.cnt_user == 0xFFFF) flashv.cnt_user = 5;
     default_write_mem();
     delay_ms(1000);
     clock = get_cclk();
@@ -159,22 +157,20 @@ int main(void)
             Test_echoUART(GSM1.buff_rx[GSM1.co_rx]);
             SaveThayDoi(&flashv,function_eeprom);
         }
-        if(((sysTick_counter - time_for_update) > 60000 ) || (time_flag_set == 1))
+        if(((sysTick_counter - time_for_update) > 60000 ) || (time_flag_set == 1)) // update clock after 60 second or every time setting clock
         {
-            time_for_update = sysTick_counter;
-            clock = get_cclk();
-            time_flag_set = 0;
+            time_for_update = sysTick_counter; 
+            clock = get_cclk();// get clock
+            time_flag_set = 0; // reset flag setting clock
         }        
         if(sysTick_counter - temp_ > 1000)
         {
-            STM_EVAL_LEDToggle(LED2);
+            STM_EVAL_LEDToggle(LED2);  // blink led status
             temp_ = sysTick_counter; 
-            if(GetMode() == 0)
+            if(GetMode() != 0) // if mode are theomua or hengio
             {
-                (status_tb[0] == 1)?RELAY1(1):RELAY1(0);
-                (status_tb[1] == 1)?RELAY2(1):RELAY2(0);      
+                OnoffOutput(timeonoff,clock); // on off with real time
             }
-            OnoffOutput(timeonoff,clock); 
         }		
 	}
 }
@@ -285,10 +281,9 @@ char CallOnOff(char *ID)
       if(mode == 0)
       {
         if(strcmp(decodeCALL.numberPhone,flashv.user[0].PHONE_NO))
-            status_tb[0] = !status_tb[0];
+            RELAY2_Toogle ;
         else
-            status_tb[1] = !status_tb[1];
-				//status_tb[1] = !status_tb[1];
+            RELAY1_Toogle ;
       }  
         return 0;
    }
