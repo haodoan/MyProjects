@@ -292,7 +292,6 @@ extern char ReadEnglis_SIMmsg(unsigned char msgnum)
 	char buff_st[20]="";
 	sprintf(buff_st,"AT+CMGR=%d\r",msgnum);
 	GSM_putsf(buff_st);
-	__delay_ms(2000);
 	if (GetEcho("+CMGR:")) 
 		return 1;
 	else
