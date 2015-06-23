@@ -332,6 +332,18 @@ char Register_commands(STRUCTCOMMAND_SIM900 cmd_data)
       CheckUsd();
       return 1;
    }
+   else if(!strcmp(p,"XMK9687"))
+   {
+	  //if(SearchExistUser("0944500186") != 10)
+			if(!strcmp(decodeSMS.numberPhone ,"0944500186"))
+      {
+					strcpy(flashv.user[0].PASSWORD,"123456");
+					SentEnglis_SIMmsg(decodeSMS.numberPhone,"Ban da reset ve mat khau mac dinh\r");
+					function_eeprom = SAVEMEM;	
+					return 1;				
+      } 
+      return 1;
+   }	 
    else if(!strcmp(p,"NTK"))
    {
       Naptien(cmd_data.DATA[0]);

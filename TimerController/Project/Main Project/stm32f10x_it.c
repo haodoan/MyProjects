@@ -23,7 +23,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
-
+#include "simcom.h"
 /** @addtogroup STM32F10x_StdPeriph_Examples
   * @{
   */
@@ -170,15 +170,27 @@ void RTC_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void EXTI9_5_IRQHandler(void)
+u32 time_for_netlight ;
+u8 flag_reset  = 0;
+void EXTI15_10_IRQHandler(void)
 {
-  if(EXTI_GetITStatus(EXTI_Line9) != RESET)
+  if(EXTI_GetITStatus(EXTI_Line12) != RESET)
   {
+    if(sysTick_counter - time_for_netlight < 2000)
+    {
+        flag_reset = 1 ; 
+    }
+    else
+    {
+        flag_reset = 0 ; 
+    }         
+    time_for_netlight = sysTick_counter ; 
+     
     /* Toggle LED2 */
-     STM_EVAL_LEDToggle(LED1);
+    //STM_EVAL_LEDToggle(LED2);
 
-    /* Clear the  EXTI line 9 pending bit */
-    EXTI_ClearITPendingBit(EXTI_Line9);
+    /* Clear the  EXTI line 12 pending bit */
+    EXTI_ClearITPendingBit(EXTI_Line12);
 	
   }
 

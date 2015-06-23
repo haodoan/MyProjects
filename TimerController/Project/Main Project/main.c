@@ -108,9 +108,42 @@ void default_write_mem()
 
 }
 
+void EXTI12_Config(void)
+{
+  /* Enable GPIOB clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+  
+  /* Configure PB.12 pin as input pull up */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  /* Enable AFIO clock */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+  /* Connect EXTI0 Line to PA.00 pin */
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource12);
+
+  /* Configure EXTI12 line */
+  EXTI_InitStructure.EXTI_Line = EXTI_Line12;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
+  /* Enable and set EXTI0 Interrupt to the lowest priority */
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+}
+
 //char tes_buff[] = "HENGIO1 2,1,2,2,2,3,2,4,2,5,2,6,2,7,2,8";
 //char tes_buff[] = "DK ADMIN 123456";
 //char tes_buff[] = "CAIDATGIO 1,40,0";
+extern u8 flag_reset;
+u32 time_check_reset_netlight ;
 int main(void)
 {
   /*!< At this stage the microcontroller clock setting is already configured, 
@@ -131,7 +164,7 @@ int main(void)
     }
     USART1_usart1_Configuration();
 	NVIC_usart1_Configuration();
-	GPIO_Configuration();
+	GPIO_Configuration();    
 	STM_EVAL_LEDInit(LED1);
 	STM_EVAL_LEDInit(LED2);
     STM_EVAL_LEDInit(LED3); 	
@@ -148,6 +181,7 @@ int main(void)
 		SentEnglis_SIMmsg("0944500186",tempbuff_);
 	else
 		SentEnglis_SIMmsg(flashv.user[0].PHONE_NO,tempbuff_); 
+    EXTI12_Config();
 	while(1)
 	{	
                 
@@ -171,7 +205,18 @@ int main(void)
             {
                 OnoffOutput(timeonoff,clock); // on off with real time
             }
-        }		
+        }
+        if(sysTick_counter - time_check_reset_netlight > 15000)
+        {
+            time_check_reset_netlight = sysTick_counter ;
+            if(flag_reset)
+            {                        
+                Nreset(1) ;
+                delay_ms(1200);
+                Nreset(0) ;                
+            }
+        }
+		
 	}
 }
 
